@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Магазин</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header style="background:#fff; border-bottom:1px solid #e2e8f0; padding:1rem 0;">
+        <div style="max-width:1200px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; padding:0 1rem;">
+            <a href="{{ url_for('index') }}" style="font-size:1.5rem; font-weight:bold; color:#d63333; text-decoration:none;">MAGAZIN</a>
+            <nav style="display:flex; gap:1.5rem; align-items:center;">
+                <a href="{{ url_for('catalog', cat='all') }}" style="color:#475569; text-decoration:none;">Каталог</a>
+                <a href="{{ url_for('catalog', cat='electronics') }}" style="color:#475569; text-decoration:none;">Электроника</a>
+                <a href="{{ url_for('catalog', cat='clothing') }}" style="color:#475569; text-decoration:none;">Одежда</a>
+                <a href="{{ url_for('catalog', cat='furniture') }}" style="color:#475569; text-decoration:none;">Мебель</a>
+
+                {% if 'username' in session %}
+                    <a href="{{ url_for('cart') }}" style="color:#475569; text-decoration:none;">Корзина</a>
+                    {% if session.role == 'admin' %}
+                        <a href="{{ url_for('dashboard_admin') }}" style="color:#d63333; text-decoration:none; font-weight:bold;">Админ-панель</a>
+                    {% endif %}
+                    {% if session.role in ['manager', 'admin'] %}
+                        <a href="{{ url_for('dashboard_manager') }}" style="color:#d63333; text-decoration:none; font-weight:bold;">Менеджер</a>
+                    {% endif %}
+                    <form action="{{ url_for('logout') }}" method="post" style="display:inline;">
+                        <button type="submit" style="background:none; border:none; color:#d63333; cursor:pointer; font-weight:bold;">Выйти ({{ session.username }})</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('login') }}" style="color:#d63333; text-decoration:none; font-weight:bold;">Войти</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main style="max-width:1200px; margin:2rem auto; padding:0 1rem;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding:1rem; margin-bottom:1rem; border-radius:8px; color:white; background:{% if category == 'error' %}#dc2626{% elif category == 'success' %}#16a34a{% else %}#60a5fa{% endif %};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="background:#f8fafc; padding:2rem 0; text-align:center; color:#64748b; margin-top:3rem;">
+        &copy; 2026 MAGAZIN. Все права защищены.
+    </footer>
+</body>
+</html>

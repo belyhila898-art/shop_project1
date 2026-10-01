@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
+  <div>
+    <img src="{{ product.image_url }}" style="width:100%; height:400px; object-fit:cover; border-radius:12px;" alt="{{ product.name }}">
+  </div>
+  <div>
+    <h1>{{ product.name }}</h1>
+    <p style="color:var(--gray);">{{ product.description }}</p>
+    <div class="price-block" style="margin:1rem 0;">
+      {% if product.discount > 0 %}
+        <span class="price-old">{{ product.price }} ₽</span>
+        <span class="price-current">{{ product.price - product.discount }} ₽</span>
+      {% else %}
+        <span class="price-current">{{ product.price }} ₽</span>
+      {% endif %}
+    </div>
+    {% if 'user_id' in session %}
+      <form method="POST" action="{{ url_for('cart') }}">
+        <input type="hidden" name="pid" value="{{ product.id }}">
+        <input type="number" name="qty" value="1" min="1" style="padding:8px; width:80px; border:1px solid #ccc; border-radius:8px;">
+        <button type="submit" name="add" class="btn btn-primary">В корзину</button>
+      </form>
+    {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-outline">Войти для покупки</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Корзина</h2>
+
+{% if items %}
+  <table>
+    <thead>
+      <tr>
+        <th>Фото</th>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Кол-во</th>
+        <th>Сумма</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set total = 0 %}
+      {% for item in items %}
+        {% set item_price = item.price - item.discount %}
+        {% set sum = item_price * item.quantity %}
+        {% set total = total + sum %}
+        <tr>
+          <td><img src="{{ item.image_url }}" style="width:60px; height:60px; object-fit:cover; border-radius:6px;"></td>
+          <td>{{ item.name }}</td>
+          <td>
+            {% if item.discount > 0 %}
+              <span style="text-decoration:line-through; color:var(--gray);">{{ item.price }} ₽</span><br>
+              <span>{{ item_price }} ₽</span>
+            {% else %}
+              {{ item.price }} ₽
+            {% endif %}
+          </td>
+          <td>{{ item.quantity }}</td>
+          <td><strong>{{ sum }} ₽</strong></td>
+          <td>
+            <form method="POST">
+              <input type="hidden" name="cid" value="{{ item.cart_id }}">
+              <button type="submit" name="remove" class="btn btn-danger" style="padding:6px 12px; font-size:0.85rem;">Удалить</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="margin-top:1.5rem; display:flex; justify-content:space-between; align-items:center;">
+    <div style="font-size:1.3rem; font-weight:700;">Итого: {{ total }} ₽</div>
+    <form method="POST" action="{{ url_for('cart') }}">
+      <button type="submit" name="checkout" class="btn btn-primary">Оформить заказ</button>
+    </form>
+  </div>
+{% else %}
+  <p style="text-align:center; padding:3rem; color:var(--gray);">Корзина пуста. Перейдите в каталог и добавьте товары.</p>
+  <div style="text-align:center;">
+    <a href="{{ url_for('catalog', cat='all') }}" class="btn btn-outline">В каталог</a>
+  </div>
+{% endif %}
+{% endblock %}

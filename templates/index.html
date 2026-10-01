@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2 style="margin-bottom:1.5rem;">Популярные товары</h2>
+<div class="products-grid">
+  {% for product in products %}
+    <div class="product-card">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+      <div class="info">
+        <h3>{{ product.name }}</h3>
+        <p style="color:var(--gray); font-size:0.9rem; margin:0 0 1rem 0;">{{ product.description[:60] }}...</p>
+        <div class="price-block">
+          {% if product.discount > 0 %}
+            <span class="price-old">{{ product.price }} ₽</span>
+            <span class="price-current">{{ product.price - product.discount }} ₽</span>
+          {% else %}
+            <span class="price-current">{{ product.price }} ₽</span>
+          {% endif %}
+        </div>
+        {% if 'user_id' in session %}
+          <form method="POST" action="{{ url_for('cart') }}" style="margin-top:1rem;">
+            <input type="hidden" name="pid" value="{{ product.id }}">
+            <input type="hidden" name="qty" value="1">
+            <button type="submit" name="add" class="btn btn-primary" style="width:100%;">В корзину</button>
+          </form>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-outline" style="display:block; width:100; text-align:center; margin-top:1rem;">Войти для покупки</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}
